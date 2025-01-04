@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block main %}
+        <div class="container mt-4">
+            <h2 class="mb-4">Teachers Database</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.id }}</td>
+                        <td>{{ teacher.name }}</td>
+                        <td>{{ teacher.username }}</td>
+                        <td>{{ teacher.password }}</td>
+                        <td>{{ 'Yes' if teacher.admin else 'No' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endblock %}

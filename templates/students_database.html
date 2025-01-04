@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block main %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header text-center">
+                    <h3>Students Database</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th><th>Name</th><th>Username</th><th>Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.roll_number }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.username }}</td>
+                                <td>{{ student.password }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

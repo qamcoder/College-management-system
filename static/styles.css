@@ -1,0 +1,24 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card-hover {
+    cursor: pointer;
+    
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-hover:hover {
+    transform: scale(1.10);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+    .card-hover {
+        margin-bottom: 20px;
+    }
+}

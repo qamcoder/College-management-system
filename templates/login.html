@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+{% block main %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header text-center">
+                    <h3>Login</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/login">
+                        <div class="form-group">
+                            <label for="role"><i class="fas fa-user-check"></i> Login As</label>
+                            <select class="form-control" id="role" name="role" required>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="username"><i class="fas fa-user"></i> Username</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password"><i class="fas fa-lock"></i> Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                <div class="input-group-append">
+                                    <span class="input-group-text" id="toggle-password">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% if get_flashed_messages() %}
+                        <header>
+                            <div class="alert alert-danger alert-dismissible fade show mb-3 text-center" role="alert">
+                                {{ get_flashed_messages() | join(" ") }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </header>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('toggle-password').addEventListener('click', function () {
+        var passwordField = document.getElementById('password');
+        var icon = this.querySelector('i');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+</script>
+{% endblock %}
