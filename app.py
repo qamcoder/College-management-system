@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify,session, render_template, flash, redirect
 from cs50 import SQL
 from helpers import is_admin, login_required, generate_username, generate_password, get_last_id, admin_required
+from datetime import timedelta
 
 
 app = Flask(__name__)
 app.secret_key = "bbede993"
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=18)
 
 if __name__ == "__main__":
     app.run(debug=True)
@@ -61,7 +63,7 @@ def login():
             "admin": is_admin(id) if role == "teacher" else False
         }
     except Exception as e:
-        print(e)
+        print("\n\n"+e)
         flash("An error occurred during login")
         return redirect("/login")
     
