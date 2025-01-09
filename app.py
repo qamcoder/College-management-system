@@ -48,7 +48,7 @@ def login():
             id = result[0]['id']
             name = result[0]['name']
         else:
-            result = db.execute("SELECT id, name FROM Teachers WHERE username = ? AND password = ?", username, password)
+            result = db.execute("SELECT id, name FROM Teachers WHERE username = ? AND password = ?", (username, password))
             if not result:
                 flash("Please enter a valid username and password")
                 return redirect("/login")
@@ -93,7 +93,7 @@ def add_student():
         password = generate_password()
 
         try:
-            db.execute("INSERT INTO Students (name, roll_number, username, password) VALUES (?, ?, ?, ?)", name, roll_no, username, password)
+            db.execute("INSERT INTO Students (name, roll_number, username, password) VALUES (?, ?, ?, ?)", (name, roll_no, username, password))
             flash(f"Student {name} added successfully. Username: {username}, Password: {password}", "success")
         except Exception as e:
             print(e)
