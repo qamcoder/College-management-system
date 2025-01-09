@@ -141,3 +141,6 @@ def students_database():
 def teachers_database():
     teachers = db.execute("SELECT * FROM Teachers")
     return render_template("teachers_database.html", teachers=teachers)
+
+
+
