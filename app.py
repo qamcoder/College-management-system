@@ -63,7 +63,7 @@ def login():
             "admin": is_admin(id) if role == "teacher" else False
         }
     except Exception as e:
-        print("\n\n"+e)
+        print("\n\n", e)
         flash("An error occurred during login")
         return redirect("/login")
     
