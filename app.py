@@ -48,7 +48,7 @@ def login():
             id = result[0]['id']
             name = result[0]['name']
         else:
-            result = db.execute("SELECT id, name FROM Teachers WHERE username = ? AND password = ?", (username, password))
+            result = db.execute("SELECT id, name FROM Teachers WHERE username = ? AND password = ?", username, password)
             if not result:
                 flash("Please enter a valid username and password")
                 return redirect("/login")
@@ -93,7 +93,7 @@ def add_student():
         password = generate_password()
 
         try:
-            db.execute("INSERT INTO Students (name, roll_number, username, password) VALUES (?, ?, ?, ?)", (name, roll_no, username, password))
+            db.execute("INSERT INTO Students (name, roll_number, username, password) VALUES (?, ?, ?, ?)", name, roll_no, username, password)
             flash(f"Student {name} added successfully. Username: {username}, Password: {password}", "success")
         except Exception as e:
             print(e)
@@ -147,4 +147,14 @@ def teachers_database():
     return render_template("teachers_database.html", teachers=teachers)
 
 
+@app.route('/mark-attendance', methods=['GET', 'POST'])
+@login_required
+def mark_attendance():
+    if request.method == "GET":
+        teacher_id = session.get("user")["id"]
+        students = db.execute("SELECT * FROM Students " )
+        return render_template("mark_attendance.html", students=students)
+    return redirect("/")
+        
+        
 

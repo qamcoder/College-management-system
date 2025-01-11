@@ -72,3 +72,5 @@ def get_last_id(table):
     result = db.execute(f"SELECT id FROM {table} ORDER BY id DESC LIMIT 1")
     return result[0]['id'] if result else None
 
+
+
