@@ -1,28 +1,40 @@
 {% extends 'layout.html' %}
 {% block main %}
-        <div class="container mt-4">
-            <h2 class="mb-4">Teachers Database</h2>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>Password</th>
-                        <th>Admin</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for teacher in teachers %}
-                    <tr>
-                        <td>{{ teacher.id }}</td>
-                        <td>{{ teacher.name }}</td>
-                        <td>{{ teacher.username }}</td>
-                        <td>{{ teacher.password }}</td>
-                        <td>{{ 'Yes' if teacher.admin else 'No' }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header text-center">
+                    <h3>Teachers Database</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>Admin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for teacher in teachers %}
+                                <tr>
+                                    <td data-label="ID">{{ teacher.id }}</td>
+                                    <td data-label="Name">{{ teacher.name }}</td>
+                                    <td data-label="Username">{{ teacher.username }}</td>
+                                    <td data-label="Password">{{ teacher.password }}</td>
+                                    <td data-label="Admin">{{ 'Yes' if teacher.admin else 'No' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 {% endblock %}

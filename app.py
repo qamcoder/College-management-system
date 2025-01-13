@@ -111,6 +111,7 @@ def add_teacher():
     if request.method == "POST":
         name = request.form.get("name")
         admin = request.form.get("admin")
+        subject = request.form.get("subject")
         id = get_last_id("Teachers") + 1
         username = f"{name}_{id}"
         password = generate_password()
@@ -122,6 +123,7 @@ def add_teacher():
 
         try:
             db.execute("INSERT INTO Teachers (name, username, password, admin) VALUES (?, ?, ?, ?)", name, username, password, admin)
+            db.execute("INSERT INTO Subjects (teacher_id, name) VALUES (?, ?)", id, subject)
             flash(f"Teacher {name} added successfully", "success")
         except Exception as e:
             print(e)

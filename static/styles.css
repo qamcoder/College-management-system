@@ -24,30 +24,23 @@ body {
 
 /* Responsive table */
 .table-responsive {
+    display: block;
+    width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
 }
 
 .table th, .table td {
-    white-space: nowrap;
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 @media (max-width: 576px) {
     .table th, .table td {
-        display: block;
-        width: 100%;
-        text-align: right;
-    }
-
-    .table th::before, .table td::before {
-        content: attr(data-label);
-        float: left;
-        font-weight: bold;
-    }
-
-    .table th, .table td {
-        text-align: left;
+        display: table-cell; /* Keep original table layout */
+        text-align: left; /* Maintain alignment */
     }
 }
+
 
 /* toggle switch */
 .toggle-switch {
