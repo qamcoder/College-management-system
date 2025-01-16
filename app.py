@@ -26,8 +26,7 @@ def index():
         attendance = db.execute("SELECT * FROM Attendance WHERE date = ?", today)
         if not attendance:
             try:
-                # generate_daily_attendance(today)
-                pass
+                generate_daily_attendance(today)
             except Exception as e:
                 return f"Error generating attendance: {e}", 500
 
@@ -164,7 +163,13 @@ def mark_attendance():
     if request.method == "GET":
         today = datetime.now().date()
         teacher_id = session.get("user")["id"]
-        subject = db.execute("SELECT id FROM Subjects WHERE teacher_id = ?", teacher_id)
+        try:
+            subject = db.execute("SELECT id FROM Subjects WHERE teacher_id = ?", teacher_id)
+        except Exception as e:
+            print(e)
+            flash("An error occurred while fetching subject", "error")
+            return redirect("/")
+            
         if not subject:
             flash("No subject found for the teacher", "warning")
             return redirect("/")
@@ -182,9 +187,33 @@ def mark_attendance():
         
         return render_template("mark_attendance.html", students=students, attendance=attendance, today=today)
     
-    if request.method == "POST":
-        # Handle the form submission to mark attendance
-        # This part needs to be implemented based on your requirements
-        pass
+    try:
+        today = datetime.now().date()
+        teacher_id = session.get("user")["id"]
+        try:
+            subject = db.execute("SELECT id FROM Subjects WHERE teacher_id = ?", teacher_id)
+        except Exception as e:
+            print(e)
+            flash("An error occurred while fetching subject", "error")
+            return redirect("/")
+        if not subject:
+            flash("No subject found for the teacher", "warning")
+            return redirect("/")
+        
+        subject_id = subject[0]["id"]
+        students = db.execute("SELECT * FROM Students")
+        for student in students:
+            status = request.form.get(f"attendance_{student['id']}")   # Valus is "Present" when the checkbox is checked otherwise "None"
+            if not(status):
+                status = "Absent"
+                
+            print(f" {student['name']}: {status}")
+            db.execute("UPDATE Attendance SET status = ? WHERE student_id = ? AND date = ? AND subject_id = ?", status, student['id'], today, subject_id)
+
+    except Exception as e:
+        print(e)
+        flash("An error occurred while marking attendance", "error")
+        return redirect("/")
     
+    flash("Attendance marked successfully", "success")
     return redirect("/")

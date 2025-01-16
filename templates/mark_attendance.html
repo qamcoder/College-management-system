@@ -21,7 +21,7 @@
                 <div class="form-group d-flex align-items-center">
                     <label for="attendance_{{ student.id }}" class="mr-2 mb-0">{{ 'Present' if current_attendance and current_attendance.status == 'Present' else 'Absent' }}</label>
                     <label class="toggle-switch">
-                        <input type="checkbox" name="attendance_{{ student.id }}" onchange="toggleAttendance(this)" {% if current_attendance and current_attendance.status == 'Present' %}checked{% endif %}>
+                        <input type="checkbox" name="attendance_{{ student.id }}" value="Present" onchange="toggleAttendance(this)" {% if current_attendance and current_attendance.status == 'Present' %}checked{% endif %}>
                         <div class="toggle-switch-background">
                             <div class="toggle-switch-handle"></div>
                         </div>
@@ -39,8 +39,10 @@
 
 {% block scripts %}
 <script>
+
     function toggleAttendance(checkbox) {
         var label = checkbox.closest('.form-group').querySelector('label[for="attendance_' + checkbox.name.split('_')[1] + '"]');
+
         if (checkbox.checked) {
             label.textContent = 'Present';
         } else {
