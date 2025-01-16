@@ -2,9 +2,10 @@
 
 {% block main %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Mark Attendance</h2>
+    <h2 class="text-center mb-4">Mark Attendance ({{ today }})</h2>
     <form method="post" action="/mark-attendance">
         {% for student in students %}
+        {% set current_attendance = attendance.get(student.id) %}
         <div class="row align-items-center mb-3">
             <div class="col-md-4">
                 <div class="form-group">
@@ -18,9 +19,9 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group d-flex align-items-center">
-                    <label for="attendance" class="mr-2 mb-0">Absent</label>
+                    <label for="attendance_{{ student.id }}" class="mr-2 mb-0">{{ 'Present' if current_attendance and current_attendance.status == 'Present' else 'Absent' }}</label>
                     <label class="toggle-switch">
-                        <input type="checkbox" name="attendance" onchange="toggleAttendance(this)">
+                        <input type="checkbox" name="attendance_{{ student.id }}" onchange="toggleAttendance(this)" {% if current_attendance and current_attendance.status == 'Present' %}checked{% endif %}>
                         <div class="toggle-switch-background">
                             <div class="toggle-switch-handle"></div>
                         </div>
@@ -29,7 +30,7 @@
             </div>
         </div>
         {% endfor %}
-        <div class="text-center">
+        <div class="text-center mt-4">
             <button type="submit" class="btn btn-primary">Submit Attendance</button>
         </div>
     </form>
@@ -39,12 +40,13 @@
 {% block scripts %}
 <script>
     function toggleAttendance(checkbox) {
-        var label = checkbox.closest('.form-group').querySelector('label[for="attendance"]');
+        var label = checkbox.closest('.form-group').querySelector('label[for="attendance_' + checkbox.name.split('_')[1] + '"]');
         if (checkbox.checked) {
             label.textContent = 'Present';
         } else {
             label.textContent = 'Absent';
         }
     }
+
 </script>
 {% endblock %}

@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify,session, render_template, flash, redirect
 from cs50 import SQL
-from helpers import is_admin, login_required, generate_username, generate_password, get_last_id, admin_required
-from datetime import timedelta
+from helpers import is_admin, login_required, generate_username, generate_password, get_last_id, admin_required, generate_daily_attendance
+from datetime import timedelta, datetime
 
 
 app = Flask(__name__)
@@ -20,7 +20,17 @@ db = SQL("sqlite:///college.db")
 @login_required
 def index():
     user = session.get("user")
-    print(user)
+    today = datetime.now().date()
+
+    if today.weekday() != 6:  # 6 = Sunday
+        attendance = db.execute("SELECT * FROM Attendance WHERE date = ?", today)
+        if not attendance:
+            try:
+                # generate_daily_attendance(today)
+                pass
+            except Exception as e:
+                return f"Error generating attendance: {e}", 500
+
     return render_template("index.html", user=user)
     
 
@@ -136,7 +146,6 @@ def add_teacher():
 
 @app.route('/students-database')
 @login_required
-@admin_required
 def students_database():
     students = db.execute("SELECT * FROM Students")
     return render_template("students_database.html", students=students)
@@ -153,10 +162,29 @@ def teachers_database():
 @login_required
 def mark_attendance():
     if request.method == "GET":
+        today = datetime.now().date()
         teacher_id = session.get("user")["id"]
-        students = db.execute("SELECT * FROM Students " )
-        return render_template("mark_attendance.html", students=students)
+        subject = db.execute("SELECT id FROM Subjects WHERE teacher_id = ?", teacher_id)
+        if not subject:
+            flash("No subject found for the teacher", "warning")
+            return redirect("/")
+        
+        subject_id = subject[0]["id"]
+        students = db.execute("SELECT * FROM Students")
+        attendance_records = db.execute("SELECT * FROM Attendance WHERE subject_id = ? AND date = ?", subject_id, today)
+        
+        # Convert attendance_records list to a dictionary
+        attendance = {record["student_id"]: record for record in attendance_records}
+        
+        if not attendance:
+            flash("Attendance not marked today", "warning")
+            return redirect("/")
+        
+        return render_template("mark_attendance.html", students=students, attendance=attendance, today=today)
+    
+    if request.method == "POST":
+        # Handle the form submission to mark attendance
+        # This part needs to be implemented based on your requirements
+        pass
+    
     return redirect("/")
-        
-        
-

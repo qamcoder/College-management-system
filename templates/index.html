@@ -20,22 +20,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card text-center card-hover" onclick="location.href='/mark-attendance'">
-                <div class="card-body">
-                    <i class="fas fa-clipboard-check" style="font-size: 48px; color: orange;"></i>
-                    <h5 class="card-title mt-2">Mark Attendance</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card text-center card-hover" onclick="location.href='/students-database'">
-                <div class="card-body">
-                    <i class="fas fa-database" style="font-size: 48px; color: purple;"></i>
-                    <h5 class="card-title mt-2">Students Database</h5>
-                </div>
-            </div>
-        </div>
+
         <div class="col-md-4 mb-4">
             <div class="card text-center card-hover" onclick="location.href='/teachers-database'">
                 <div class="card-body">
@@ -44,8 +29,28 @@
                 </div>
             </div>
         </div>
+        {% else %}
+        <div class="col-md-4 mb-4">
+            <div class="card text-center card-hover" onclick="location.href='/mark-attendance'">
+                <div class="card-body">
+                    <i class="fas fa-clipboard-check" style="font-size: 48px; color: orange;"></i>
+                    <h5 class="card-title mt-2">Mark Attendance</h5>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+        <div class="col-md-4 mb-4">
+            <div class="card text-center card-hover" onclick="location.href='/students-database'">
+                <div class="card-body">
+                    <i class="fas fa-database" style="font-size: 48px; color: purple;"></i>
+                    <h5 class="card-title mt-2">Students Database</h5>
+                </div>
+            </div>
+        </div>
+        
     </div>
     
-    {% endif %}
+    
 </div>
 {% endblock %}

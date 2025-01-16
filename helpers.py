@@ -1,6 +1,4 @@
 from cs50 import SQL
-import requests
-
 from flask import redirect, session
 from functools import wraps
 import string
@@ -73,4 +71,23 @@ def get_last_id(table):
     return result[0]['id'] if result else None
 
 
-
+def generate_daily_attendance(today):
+    # Get all students and subjects
+    students = db.execute("SELECT id FROM Students")
+    subjects = db.execute("SELECT id FROM Subjects")
+    if not students or not subjects:
+        raise ValueError("No students or subjects found in the database.")
+    # Iterate through each student and subject combination
+    for student in students:
+        for subject in subjects:
+            # Check if attendance already exists
+            existing_attendance = db.execute(
+                "SELECT id FROM Attendance WHERE student_id = ? AND subject_id = ? AND date = ?",
+                student["id"], subject["id"], today
+            )
+            if not existing_attendance:
+                db.execute(
+                    "INSERT INTO Attendance (student_id, subject_id, date, status) VALUES (?, ?, ?, ?)",
+                    student["id"], subject["id"], today, "Absent"
+                )
+    print("Attendance generated successfully.")
