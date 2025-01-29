@@ -1,93 +1,90 @@
-from cs50 import SQL
+import sqlite3
 from flask import redirect, session
 from functools import wraps
 import string
 import secrets
 
+DATABASE = "college.db"
 
-db = SQL("sqlite:///college.db")
-
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row  # Returns dict-like rows
+    return conn
 
 def is_admin(teacher_id):
-    result = db.execute("SELECT admin FROM Teachers WHERE id = ?", teacher_id)
-    return result[0]['admin'] == 1  # Returns True if admin is True
-
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT admin FROM Teachers WHERE id = ?", (teacher_id,))
+    result = cur.fetchone()
+    conn.close()
+    return result["admin"] == 1 if result else False
 
 def generate_username(name, roll_number):
-    # Remove spaces and convert name to lowercase
     base = name.replace(" ", "").lower() + roll_number
     suffix = 1
+    conn = get_db_connection()
+    cur = conn.cursor()
     while True:
         username = f"{base}_{suffix}"
-        # Check if username already exists
-        result = db.execute("SELECT id FROM Students WHERE username = ?", username)
-        if not result:
+        cur.execute("SELECT id FROM Students WHERE username = ?", (username,))
+        if not cur.fetchone():
             break
         suffix += 1
+    conn.close()
     return username
 
 def generate_password(length=8):
-    # Create a secure random password
     characters = string.ascii_letters + string.digits + "!@#$%^&*"
-    password = ''.join(secrets.choice(characters) for _ in range(length))
-    return password
-
-
+    return ''.join(secrets.choice(characters) for _ in range(length))
 
 def login_required(f):
-    """
-    Decorate routes to require login.
-
-    https://flask.palletsprojects.com/en/latest/patterns/viewdecorators/
-    """
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user") is None:
             return redirect("/login")
         return f(*args, **kwargs)
-
     return decorated_function
 
-
 def admin_required(f):
-    """
-    Decorate routes to require admin login.
-
-    https://flask.palletsprojects.com/en/latest/patterns/viewdecorators/
-    """
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_admin(session.get("user")["id"]):
             return redirect("/")
         return f(*args, **kwargs)
-
     return decorated_function
 
-
 def get_last_id(table):
-    result = db.execute(f"SELECT id FROM {table} ORDER BY id DESC LIMIT 1")
-    return result[0]['id'] if result else None
-
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(f"SELECT id FROM {table} ORDER BY id DESC LIMIT 1")
+    result = cur.fetchone()
+    conn.close()
+    return result["id"] if result else None
 
 def generate_daily_attendance(today):
-    # Get all students and subjects
-    students = db.execute("SELECT id FROM Students")
-    subjects = db.execute("SELECT id FROM Subjects")
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("SELECT id FROM Students")
+    students = cur.fetchall()
+    
+    cur.execute("SELECT id FROM Subjects")
+    subjects = cur.fetchall()
+
     if not students or not subjects:
+        conn.close()
         raise ValueError("No students or subjects found in the database.")
-    # Iterate through each student and subject combination
+
     for student in students:
         for subject in subjects:
-            # Check if attendance already exists
-            existing_attendance = db.execute(
+            cur.execute(
                 "SELECT id FROM Attendance WHERE student_id = ? AND subject_id = ? AND date = ?",
-                student["id"], subject["id"], today
+                (student["id"], subject["id"], today)
             )
-            if not existing_attendance:
-                db.execute(
+            if not cur.fetchone():
+                cur.execute(
                     "INSERT INTO Attendance (student_id, subject_id, date, status) VALUES (?, ?, ?, ?)",
-                    student["id"], subject["id"], today, "Absent"
+                    (student["id"], subject["id"], today, "Absent")
                 )
-    print("Attendance generated successfully.")
+    conn.commit()
+    conn.close()
