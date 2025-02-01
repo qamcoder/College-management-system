@@ -71,9 +71,10 @@
     <p><i class="fas fa-user-tag"></i> <strong>Name:</strong> {{ user.name }}</p>
 </div>
 
+<h1 style="text-align: center;">Attendance</h1>
 <div class="progress-container">
     <div class="progress-bar" id="progress-bar"></div>
-    <div class="progress-text">{{ attendance_percentage }}%</div>
+    <div class="progress-text">{{ "%.2f"|format(attendance_percentage) }}%</div>
 </div>
 
 <!-- Legend explaining colors -->
