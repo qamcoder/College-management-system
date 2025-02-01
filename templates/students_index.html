@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<style>
+    .user-info {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .progress-container {
+        width: 80%;
+        max-width: 400px;
+        background: red; /* Background red (Absent part) */
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 20px auto;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .progress-bar {
+        height: 30px;
+        width: 0%;
+        background: green; /* Green part for Present */
+        color: white;
+        line-height: 30px;
+        transition: width 1s ease-in-out;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .progress-text {
+        position: relative;
+        z-index: 2;
+        color: white;
+        font-weight: bold;
+    }
+
+    .legend {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .legend-box {
+        display: flex;
+        align-items: center;
+        margin: 0 20px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        margin-right: 8px;
+    }
+
+    .green { background: green; }
+    .red { background: red; }
+</style>
+
+<div class="user-info">
+    <p><i class="fas fa-user"></i> <strong>Username:</strong> {{ user.username }}</p>
+    <p><i class="fas fa-id-badge"></i> <strong>User ID:</strong> {{ user.id }}</p>
+    <p><i class="fas fa-user-tag"></i> <strong>Name:</strong> {{ user.name }}</p>
+</div>
+
+<div class="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
+    <div class="progress-text">{{ attendance_percentage }}%</div>
+</div>
+
+<!-- Legend explaining colors -->
+<div class="legend">
+    <div class="legend-box">
+        <div class="legend-color green"></div> <span>Present</span>
+    </div>
+    <div class="legend-box">
+        <div class="legend-color red"></div> <span>Absent</span>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const attendancePercentage = parseFloat("{{ attendance_percentage | default(0) }}");
+        const progressBar = document.getElementById("progress-bar");
+
+        // Set progress bar width to attendance percentage
+        progressBar.style.width = attendancePercentage + "%";
+    });
+</script>
+{% endblock %}

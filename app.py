@@ -15,28 +15,33 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row  # Allows accessing columns by name
     return conn
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 @app.route("/", methods=['GET', 'POST'])
 @login_required
 def index():
     user = session.get("user")
-    today = datetime.now().date()
+    try:
+        generate_daily_attendance()
+    except Exception as e:
+        return f"Error generating attendance: {e}", 500
 
-    if today.weekday() != 6:  # 6 = Sunday
+    if user["role"].casefold() == "teacher":
+        return render_template("teachers_index.html", user=user)
+    elif user["role"].casefold() == "student":
+        student_id = user["id"]
+
         conn = get_db_connection()
-        attendance = conn.execute("SELECT * FROM Attendance WHERE date = ?", (today,)).fetchall()
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) as total_classes FROM Attendance WHERE student_id = ?", (student_id,))
+        total_classes = cur.fetchone()["total_classes"]
+
+        cur.execute("SELECT COUNT(*) as attended_classes FROM Attendance WHERE student_id = ? AND status = 'Present'", (student_id,))
+        attended_classes = cur.fetchone()["attended_classes"]
+
+        attendance_percentage = (attended_classes / total_classes) * 100 if total_classes > 0 else 0
+
         conn.close()
 
-        if not attendance:
-            try:
-                generate_daily_attendance(today)
-            except Exception as e:
-                return f"Error generating attendance: {e}", 500
-
-    return render_template("index.html", user=user)
-    
+        return render_template("students_index.html", attendance_percentage=attendance_percentage, user = user)
 
 @app.route('/login', methods=['POST', "GET"])
 def login():

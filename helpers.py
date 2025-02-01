@@ -3,6 +3,7 @@ from flask import redirect, session
 from functools import wraps
 import string
 import secrets
+from datetime import datetime
 
 DATABASE = "college.db"
 
@@ -61,30 +62,37 @@ def get_last_id(table):
     conn.close()
     return result["id"] if result else None
 
-def generate_daily_attendance(today):
+def generate_daily_attendance():
+    today = datetime.now().date()
+    if today.weekday() == 6:  # 6 = Sunday
+        return
+
     conn = get_db_connection()
     cur = conn.cursor()
-    
-    cur.execute("SELECT id FROM Students")
-    students = cur.fetchall()
-    
-    cur.execute("SELECT id FROM Subjects")
-    subjects = cur.fetchall()
+    cur.execute("SELECT * FROM Attendance WHERE date = ?", (today,))
+    attendance = cur.fetchall()
 
-    if not students or not subjects:
-        conn.close()
-        raise ValueError("No students or subjects found in the database.")
+    if not attendance:
+        cur.execute("SELECT id FROM Students")
+        students = cur.fetchall()
+        
+        cur.execute("SELECT id FROM Subjects")
+        subjects = cur.fetchall()
 
-    for student in students:
-        for subject in subjects:
-            cur.execute(
-                "SELECT id FROM Attendance WHERE student_id = ? AND subject_id = ? AND date = ?",
-                (student["id"], subject["id"], today)
-            )
-            if not cur.fetchone():
+        if not students or not subjects:
+            conn.close()
+            raise ValueError("No students or subjects found in the database.")
+
+        for student in students:
+            for subject in subjects:
                 cur.execute(
-                    "INSERT INTO Attendance (student_id, subject_id, date, status) VALUES (?, ?, ?, ?)",
-                    (student["id"], subject["id"], today, "Absent")
+                    "SELECT id FROM Attendance WHERE student_id = ? AND subject_id = ? AND date = ?",
+                    (student["id"], subject["id"], today)
                 )
-    conn.commit()
+                if not cur.fetchone():
+                    cur.execute(
+                        "INSERT INTO Attendance (student_id, subject_id, date, status) VALUES (?, ?, ?, ?)",
+                        (student["id"], subject["id"], today, "Absent")
+                    )
+        conn.commit()
     conn.close()
